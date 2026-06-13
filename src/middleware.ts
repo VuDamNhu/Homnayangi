@@ -7,9 +7,8 @@ export function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isLoginPage = pathname === "/admin/login";
 
-  // TODO: replace with NextAuth session check once auth is wired up
-  // const session = await auth();
-  const session = null;
+  // Mock auth via cookie — replace with NextAuth session check once auth is wired up
+  const session = request.cookies.get("admin-session")?.value ?? null;
 
   if (isAdminRoute && !isLoginPage && !session) {
     const loginUrl = new URL("/admin/login", request.url);
