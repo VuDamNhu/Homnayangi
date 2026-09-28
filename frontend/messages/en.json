@@ -1,0 +1,12 @@
+{
+  "Common": {
+    "search": "Search",
+    "home": "Home",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "HomePage": {
+    "title": "What to eat today?",
+    "description": "Discover thousands of delicious dishes every day."
+  }
+}

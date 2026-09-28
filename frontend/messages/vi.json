@@ -1,0 +1,12 @@
+{
+  "Common": {
+    "search": "Tìm kiếm",
+    "home": "Trang chủ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất"
+  },
+  "HomePage": {
+    "title": "Hôm nay ăn gì?",
+    "description": "Khám phá hàng nghìn món ăn ngon mỗi ngày."
+  }
+}

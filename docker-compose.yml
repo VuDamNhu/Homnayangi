@@ -1,0 +1,55 @@
+services:
+  # ===== Database MongoDB =====
+  mongo:
+    image: mongo:7
+    container_name: app-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [app-net]
+
+  # ===== Backend NestJS =====
+  backend:
+    build: ./backend
+    container_name: app-backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongo:27017/${MONGO_DB_NAME}?authSource=admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    networks: [app-net]
+
+  # ===== Frontend Next.js =====
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: app-frontend
+    restart: unless-stopped
+    depends_on: [backend]
+    ports:
+      - "3000:3000"
+    networks: [app-net]
+
+volumes:
+  mongo_data:
+
+networks:
+  app-net:
+    driver: bridge
