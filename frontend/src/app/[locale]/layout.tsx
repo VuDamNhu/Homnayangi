@@ -1,10 +1,41 @@
 import type { Metadata } from "next";
+import {
+  Anybody,
+  Hanken_Grotesk,
+  Space_Grotesk,
+  JetBrains_Mono,
+} from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import "../globals.css";
 import { Providers } from "@/providers";
 import PageTransition from "@/components/common/PageTransition";
 import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+
+const anybody = Anybody({
+  variable: "--font-anybody",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["200", "300", "400", "700", "800", "900"],
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +62,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className="h-full antialiased font-sans"
+      className={`${anybody.variable} ${hankenGrotesk.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-zen-cream text-on-surface">
         <NextIntlClientProvider messages={messages}>
