@@ -8,7 +8,11 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html>
+    <html lang="en">
+      <head>
+        <title>Error</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body>
         <div style={{ padding: "20px", textAlign: "center", fontFamily: "sans-serif" }}>
           <h2>Something went wrong!</h2>
