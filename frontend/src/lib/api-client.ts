@@ -5,7 +5,9 @@ class ApiError extends Error {
   }
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// Trên client, gọi qua proxy của Next.js (để cookie được set trên cùng domain Netlify).
+// Trên server, gọi trực tiếp API thật.
+const API_URL = typeof window !== 'undefined' ? '/api' : process.env.NEXT_PUBLIC_API_URL;
 
 // Tránh gọi refresh nhiều lần cùng lúc khi nhiều request cùng bị 401
 let refreshPromise: Promise<boolean> | null = null;
