@@ -50,5 +50,5 @@ export function proxy(req: NextRequest) {
 export const config = {
   // Chỉ match root (/) và các path có locale (/vi, /en)
   // Bỏ qua tất cả các path nội bộ của Next.js (bắt đầu bằng _) như /_global-error, /_not-found, /_next
-  matcher: ['/', '/(en|vi)/:path*']
+  matcher: ['/((?!api|_next|_global-error|_not-found|.*\\..*).*)']
 };
