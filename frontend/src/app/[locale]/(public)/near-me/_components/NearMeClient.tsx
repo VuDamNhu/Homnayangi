@@ -60,10 +60,10 @@ export default function NearMeClient() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          // Fallback if denied
+          // Fallback if denied or timeout
           setUserLocation(defaultCenter);
         },
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     } else {
       setUserLocation(defaultCenter);
@@ -83,7 +83,7 @@ export default function NearMeClient() {
     if (!userLocation) return;
     setIsLoading(true);
     try {
-      // Overpass API Query for OSM (Completely Free, No API Key needed)
+      // Overpass API Query for OSM
       const radius = maxDistance * 1000;
       let amenityQuery = '"amenity"~"restaurant|cafe|fast_food|food_court"';
       if (activeCategory === "Cà phê") amenityQuery = '"amenity"="cafe"';
@@ -97,7 +97,10 @@ export default function NearMeClient() {
       
       const res = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
-        body: query
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `data=${encodeURIComponent(query)}`
       });
       const data = await res.json();
       
