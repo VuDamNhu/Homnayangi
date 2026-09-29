@@ -1,0 +1,4 @@
+# Biến môi trường — KHÔNG được commit
+.env
+.env.local
+.env.*.local
