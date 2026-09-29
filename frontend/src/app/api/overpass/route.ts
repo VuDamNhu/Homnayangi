@@ -7,7 +7,9 @@ export async function POST(req: Request) {
     const response = await fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Homnayangi-Web/1.0'
       },
       body: `data=${encodeURIComponent(query)}`
     });
