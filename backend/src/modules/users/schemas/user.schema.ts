@@ -23,7 +23,7 @@ export class User {
   role!: Role;
 
   // SECURITY: Lưu HASH của refresh token, không lưu token gốc
-  @Prop({ select: false, default: null })
+  @Prop({ type: String, select: false, default: null })
   refreshTokenHash!: string | null;
 
   // Dùng để vô hiệu hoá toàn bộ token cũ khi đổi mật khẩu / đăng xuất mọi thiết bị
@@ -36,7 +36,7 @@ export class User {
   @Prop({ type: Date, default: null })
   lockUntil!: Date | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   deletedAt!: Date | null;
 }
 
