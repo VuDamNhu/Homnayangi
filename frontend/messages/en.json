@@ -5,8 +5,35 @@
     "login": "Login",
     "logout": "Logout"
   },
+  "Navigation": {
+    "discover": "Discover",
+    "recipes": "Recipes",
+    "fridgeAssistant": "Fridge Assistant",
+    "nearMe": "Near Me",
+    "searchPlaceholder": "Search dishes..."
+  },
   "HomePage": {
     "title": "What to eat today?",
     "description": "Discover thousands of delicious dishes every day."
+  },
+  "LuckyWheel": {
+    "title": "WHAT TO EAT",
+    "subtitle": "TODAY?!",
+    "journey": "Your culinary journey",
+    "dontKnow": "Don't know what to eat?",
+    "letWheelDecide": "Let the wheel of destiny decide your next meal. Add the dishes you are considering and spin the wheel!",
+    "tip": "Tip: You can add any custom dish to the list.",
+    "listTitle": "DISH LIST",
+    "addCustom": "Add custom dish...",
+    "addToWheel": "ADD TO WHEEL",
+    "recentDiscoveries": "Recent Discoveries",
+    "popularFromCommunity": "Popular dishes from the community",
+    "spin": "SPIN",
+    "fateDecided": "Fate Decided",
+    "dishToday": "Today's Dish:",
+    "seeRecipe": "SEE RECIPE",
+    "goBack": "GO BACK",
+    "newJourney": "A new culinary journey awaits. Conquer this dish to get",
+    "peaceInEveryBite": "Peace in every bite"
   }
 }

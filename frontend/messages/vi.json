@@ -5,8 +5,35 @@
     "login": "Đăng nhập",
     "logout": "Đăng xuất"
   },
+  "Navigation": {
+    "discover": "Khám Phá",
+    "recipes": "Công Thức",
+    "fridgeAssistant": "Trợ Lý Tủ Lạnh",
+    "nearMe": "Gần Tôi",
+    "searchPlaceholder": "Tìm món ăn..."
+  },
   "HomePage": {
     "title": "Hôm nay ăn gì?",
     "description": "Khám phá hàng nghìn món ăn ngon mỗi ngày."
+  },
+  "LuckyWheel": {
+    "title": "HÔM NAY",
+    "subtitle": "ĂN GÌ?!",
+    "journey": "Hành trình ẩm thực của bạn",
+    "dontKnow": "Không biết ăn gì?",
+    "letWheelDecide": "Hãy để bánh xe định mệnh quyết định bữa ăn tiếp theo của bạn. Thêm các món bạn đang phân vân và quay vòng quay!",
+    "tip": "Mẹo: Thêm món ăn tuỳ thích của bạn vào danh sách.",
+    "listTitle": "DANH SÁCH MÓN",
+    "addCustom": "Thêm món tuỳ chỉnh...",
+    "addToWheel": "THÊM VÀO VÒNG QUAY",
+    "recentDiscoveries": "Khám Phá Gần Đây",
+    "popularFromCommunity": "Món ăn được yêu thích từ cộng đồng",
+    "spin": "SPIN",
+    "fateDecided": "Số Phận Đã Định",
+    "dishToday": "Món Hôm Nay:",
+    "seeRecipe": "XEM CÔNG THỨC",
+    "goBack": "QUAY LẠI",
+    "newJourney": "Hành trình ẩm thực mới đang chờ bạn. Chinh phục món này để nhận",
+    "peaceInEveryBite": "Bình yên trong từng miếng"
   }
 }

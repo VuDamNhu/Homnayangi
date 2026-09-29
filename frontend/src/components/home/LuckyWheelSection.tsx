@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations, useLocale } from "next-intl";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -129,8 +131,23 @@ export function LuckyWheelSection() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalResult, setModalResult] = useState("");
   const [wheelDeg, setWheelDeg] = useState(0);
+  const t = useTranslations("LuckyWheel");
+  const locale = useLocale();
+  const [apiData, setApiData] = useState<any>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    fetch(`/api/discover?locale=${locale}`)
+      .then(res => res.json())
+      .then(data => {
+        setApiData(data);
+        if (data.categories && data.categories[activeCategory]) {
+          setOptions([...data.categories[activeCategory].options]);
+        }
+      })
+      .catch(console.error);
+  }, [locale]);
 
   useEffect(() => {
     if (canvasRef.current) renderWheel(canvasRef.current, options);
@@ -138,8 +155,12 @@ export function LuckyWheelSection() {
 
   const changeCategory = useCallback((cat: DietCategory) => {
     setActiveCategory(cat);
-    setOptions([...categoryData[cat].options]);
-  }, []);
+    if (apiData && apiData.categories[cat]) {
+      setOptions([...apiData.categories[cat].options]);
+    } else {
+      setOptions([...categoryData[cat].options]);
+    }
+  }, [apiData]);
 
   const spin = useCallback(() => {
     if (isSpinning) return;
@@ -174,7 +195,8 @@ export function LuckyWheelSection() {
     setCustomInput("");
   }, [customInput, options.length]);
 
-  const discoveries = categoryData[activeCategory].discoveries;
+  const discoveries = apiData ? apiData.categories[activeCategory].discoveries : categoryData[activeCategory].discoveries;
+  const currentTabs = apiData ? apiData.tabs : dietTabs;
 
   return (
     <>
@@ -192,10 +214,10 @@ export function LuckyWheelSection() {
 
               <div className="text-center space-y-7">
                 <p className="font-label text-[10px] uppercase tracking-[0.5em] text-zen-gold">
-                  Số Phận Đã Định
+                  {t("fateDecided")}
                 </p>
                 <h2 className="font-display text-3xl font-black italic uppercase leading-tight tracking-tight text-on-surface">
-                  Món Hôm Nay: {modalResult.toUpperCase()}
+                  {t("dishToday")} {modalResult.toUpperCase()}
                 </h2>
                 <div className="aspect-video overflow-hidden border border-zen-gold/10">
                   <Image
@@ -207,21 +229,20 @@ export function LuckyWheelSection() {
                   />
                 </div>
                 <p className="font-body text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">
-                  Hành trình ẩm thực mới đang chờ bạn. Chinh phục món này để nhận{" "}
-                  <span className="text-zen-gold font-bold">+50 XP</span>.
+                  {t("newJourney")} <span className="text-zen-gold font-bold">+50 XP</span>.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <Link
                     href={`/search?q=${encodeURIComponent(modalResult)}&diet=${activeCategory}`}
                     className="flex-1 bg-zen-gold text-white py-4 font-label text-[10px] uppercase tracking-[0.2em] text-center hover:bg-zen-ink transition-all"
                   >
-                    Xem Công Thức
+                    {t("seeRecipe")}
                   </Link>
                   <button
                     onClick={() => setModalVisible(false)}
                     className="flex-1 border border-zen-gold text-zen-gold py-4 font-label text-[10px] uppercase tracking-[0.2em] hover:bg-zen-gold/5 transition-all"
                   >
-                    Quay Lại
+                    {t("goBack")}
                   </button>
                 </div>
               </div>
@@ -237,21 +258,31 @@ export function LuckyWheelSection() {
         <section className="relative px-5 md:px-[60px] py-20 flex flex-col items-center">
 
           {/* Headline */}
-          <div className="relative z-10 text-center mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="relative z-10 text-center mb-16"
+          >
             <h1 className="font-display text-[clamp(2.8rem,8vw,4.5rem)] text-on-surface font-black italic uppercase leading-[0.9] tracking-tighter mb-4">
-              HÔM NAY <br />
-              <span className="text-zen-gold">ĂN GÌ?!</span>
+              {t("title")} <br />
+              <span className="text-zen-gold">{t("subtitle")}</span>
             </h1>
             <div className="mt-8 inline-block px-8 py-1.5 border border-zen-gold/20 rounded-full">
               <p className="font-label text-[9px] tracking-[0.5em] text-on-surface-variant uppercase">
-                Hành trình ẩm thực của bạn
+                {t("journey")}
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Category tabs */}
-          <div className="flex gap-10 md:gap-14 mb-16 z-20 border-b border-zen-gold/10 w-full max-w-xl justify-center relative">
-            {dietTabs.map((tab) => (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex gap-10 md:gap-14 mb-16 z-20 border-b border-zen-gold/10 w-full max-w-xl justify-center relative"
+          >
+            {currentTabs.map((tab: any) => (
               <button
                 key={tab.value}
                 onClick={() => changeCategory(tab.value)}
@@ -265,10 +296,15 @@ export function LuckyWheelSection() {
                 {tab.label}
               </button>
             ))}
-          </div>
+          </motion.div>
 
           {/* Wheel + right panel row */}
-          <div className="relative w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-14 lg:gap-24 mt-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, type: "spring", bounce: 0.3 }}
+            className="relative w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-10 mt-4"
+          >
 
             {/* ── Background decorations ─────────────────────────────────────── */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 overflow-visible">
@@ -286,17 +322,31 @@ export function LuckyWheelSection() {
               </div>
             </div>
 
-            {/* Floating mascot — xl only */}
-            <div className="hidden xl:block absolute -left-12 bottom-16 animate-float opacity-40 hover:opacity-100 transition-opacity">
-              <div
-                className="w-20 h-20 bg-zen-cream border border-zen-gold/20 rounded-full flex items-center justify-center"
-                style={{ boxShadow: "0 10px 30px -10px rgba(197,160,40,0.1)" }}
-              >
-                <span className="text-3xl">🍜</span>
+
+
+            {/* ── Left panel ─────────────────────────────────────────────────── */}
+            <div className="hidden lg:flex flex-1 justify-end lg:pr-10">
+              <div className="flex flex-col justify-center gap-6 w-full max-w-sm relative z-10 text-right opacity-80 hover:opacity-100 transition-opacity">
+                <div className="flex justify-end mb-2">
+                  <div className="w-12 h-12 rounded-full border border-zen-gold/30 flex items-center justify-center bg-zen-gold/5 text-zen-gold text-2xl shadow-[0_0_15px_rgba(197,160,40,0.1)]">
+                    ✨
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-display text-2xl font-black italic uppercase tracking-tight text-on-surface mb-3">
+                    {t("dontKnow")}
+                  </h3>
+                  <p className="font-body text-sm text-on-surface-variant leading-relaxed">
+                    {t("letWheelDecide")}
+                  </p>
+                </div>
+                
+                <div className="pt-6 border-t border-zen-gold/10 mt-2">
+                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-zen-gold/80">
+                    {t("tip")}
+                  </p>
+                </div>
               </div>
-              <p className="mt-4 font-label text-[9px] uppercase tracking-widest text-on-surface-variant italic text-center">
-                Bình yên trong từng miếng
-              </p>
             </div>
 
             {/* ── Lucky Wheel ────────────────────────────────────────────────── */}
@@ -339,7 +389,11 @@ export function LuckyWheelSection() {
                   transition: "transform 5s cubic-bezier(0.15, 0, 0.15, 1)",
                 }}
               >
-                <canvas
+                <motion.canvas
+                  key={activeCategory}
+                  initial={{ opacity: 0, scale: 0.8, rotate: -30 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.5, type: "spring" }}
                   ref={canvasRef}
                   width={540}
                   height={540}
@@ -365,7 +419,7 @@ export function LuckyWheelSection() {
                 <div className="absolute inset-2 border-2 border-white/40 border-dashed rounded-full animate-rotate-slow" />
                 {/* Text */}
                 <span className="relative z-10 font-display text-white text-xl md:text-2xl uppercase italic tracking-tighter font-black drop-shadow-md">
-                  {isSpinning ? "···" : "SPIN"}
+                  {isSpinning ? "···" : t("spin")}
                 </span>
                 {/* Shimmer overlay */}
                 <div className="absolute inset-0 shimmer opacity-30 rounded-full" />
@@ -373,36 +427,47 @@ export function LuckyWheelSection() {
             </div>
 
             {/* ── Right panel ────────────────────────────────────────────────── */}
-            <div className="flex flex-col gap-10 w-full max-w-sm relative z-10">
+            <div className="flex-1 flex justify-center lg:justify-start w-full lg:pl-10">
+              <div className="flex flex-col gap-10 w-full max-w-sm relative z-10">
 
               {/* Current Quests card */}
               <div
                 className="bg-zen-cream/60 backdrop-blur-sm border border-zen-gold/20 p-10 relative zen-shadow"
               >
                 <div className="absolute -top-3 left-8 bg-zen-gold text-white px-4 py-0.5 font-label text-[9px] uppercase tracking-[0.4em]">
-                  Danh Sách Món
+                  {t("listTitle")}
                 </div>
                 <ul className="space-y-6 max-h-[180px] overflow-y-auto pr-4 scrollbar-thin">
-                  {options.map((opt, idx) => (
-                    <li key={idx} className="flex justify-between items-center group">
-                      <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant flex items-center gap-3">
-                        <span
-                          className="w-1.5 h-1.5 rounded-full inline-block shrink-0"
-                          style={{ backgroundColor: WHEEL_COLORS[idx % WHEEL_COLORS.length] }}
-                        />
-                        {opt}
-                      </span>
-                      {options.length > 2 && (
-                        <button
-                          onClick={() => removeOption(idx)}
-                          className="opacity-0 group-hover:opacity-100 text-sm text-zen-gold hover:text-zen-ink transition-all leading-none ml-2 shrink-0"
-                          aria-label={`Xoá ${opt}`}
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </li>
-                  ))}
+                  <AnimatePresence mode="popLayout">
+                    {options.map((opt, idx) => (
+                      <motion.li 
+                        key={`${opt}-${idx}`}
+                        layout
+                        initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+                        transition={{ duration: 0.2 }}
+                        className="flex justify-between items-center group"
+                      >
+                        <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant flex items-center gap-3">
+                          <span
+                            className="w-1.5 h-1.5 rounded-full inline-block shrink-0"
+                            style={{ backgroundColor: WHEEL_COLORS[idx % WHEEL_COLORS.length] }}
+                          />
+                          {opt}
+                        </span>
+                        {options.length > 2 && (
+                          <button
+                            onClick={() => removeOption(idx)}
+                            className="w-6 h-6 flex items-center justify-center rounded-full bg-zen-gold/10 text-zen-gold hover:bg-red-500 hover:text-white transition-all ml-2 shrink-0 text-xs"
+                            aria-label={`Xoá ${opt}`}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
                 </ul>
               </div>
 
@@ -413,18 +478,19 @@ export function LuckyWheelSection() {
                   value={customInput}
                   onChange={(e) => setCustomInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addOption()}
-                  placeholder="Thêm món tuỳ chỉnh..."
+                  placeholder={t("addCustom")}
                   className="w-full bg-transparent border-b border-zen-gold/40 p-3 font-label text-[11px] tracking-widest uppercase focus:outline-none focus:border-zen-gold transition-all placeholder:text-on-surface-variant/40"
                 />
                 <button
                   onClick={addOption}
                   className="w-full bg-zen-ink text-zen-gold py-4 font-label text-[10px] uppercase tracking-[0.3em] hover:bg-zen-gold hover:text-white transition-all shadow-xl"
                 >
-                  THÊM VÀO VÒNG QUAY
+                  {t("addToWheel")}
                 </button>
               </div>
             </div>
-          </div>
+            </div>
+          </motion.div>
         </section>
 
         {/* ── Recent Discoveries ────────────────────────────────────────────── */}
@@ -432,57 +498,64 @@ export function LuckyWheelSection() {
           <div className="flex items-center justify-between mb-20">
             <div>
               <h2 className="font-display text-2xl font-black uppercase italic text-zen-gold tracking-tight">
-                Khám Phá Gần Đây
+                {t("recentDiscoveries")}
               </h2>
               <p className="font-body text-xs text-on-surface-variant mt-2 tracking-wide uppercase font-semibold opacity-60">
-                Món ăn được yêu thích từ cộng đồng
+                {t("popularFromCommunity")}
               </p>
             </div>
             <div className="hidden md:block w-32 h-px bg-zen-gold/20" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            {discoveries.map((item) => (
-              <Link
+            {discoveries.map((item: any, i: number) => (
+              <motion.div
                 key={item.slug}
-                href={`/dish/${item.slug}`}
-                className="space-y-6 group cursor-pointer block"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
               >
-                <div
-                  className="aspect-square overflow-hidden border border-zen-gold/5"
-                  style={{ boxShadow: "0 10px 30px -10px rgba(197,160,40,0.07)" }}
+                <Link
+                  href={`/dish/${item.slug}`}
+                  className="space-y-6 group cursor-pointer block"
                 >
-                  <Image
-                    src={item.img}
-                    alt={item.title}
-                    width={600}
-                    height={600}
-                    className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-end gap-2">
-                    <h3 className="font-display text-lg font-black uppercase italic text-on-surface tracking-tighter group-hover:text-zen-gold transition-colors leading-tight">
-                      {item.title}
-                    </h3>
-                    <span className="font-label text-[9px] uppercase tracking-widest text-zen-gold shrink-0">
-                      +{item.xp} XP
-                    </span>
+                  <div
+                    className="aspect-square overflow-hidden border border-zen-gold/5"
+                    style={{ boxShadow: "0 10px 30px -10px rgba(197,160,40,0.07)" }}
+                  >
+                    <Image
+                      src={item.img}
+                      alt={item.title}
+                      width={600}
+                      height={600}
+                      className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                    />
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-label text-[8px] uppercase tracking-[0.3em] text-on-surface-variant opacity-60">
-                      {item.badge}
-                    </span>
-                    <div className="flex gap-px">
-                      {Array.from({ length: item.stars }).map((_, i) => (
-                        <span key={i} className="text-zen-gold text-[11px] leading-none">
-                          ★
-                        </span>
-                      ))}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-end gap-2">
+                      <h3 className="font-display text-lg font-black uppercase italic text-on-surface tracking-tighter group-hover:text-zen-gold transition-colors leading-tight">
+                        {item.title}
+                      </h3>
+                      <span className="font-label text-[9px] uppercase tracking-widest text-zen-gold shrink-0">
+                        +{item.xp} XP
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-label text-[8px] uppercase tracking-[0.3em] text-on-surface-variant opacity-60">
+                        {item.badge}
+                      </span>
+                      <div className="flex gap-px">
+                        {Array.from({ length: item.stars }).map((_, i) => (
+                          <span key={i} className="text-zen-gold text-[11px] leading-none">
+                            ★
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </section>

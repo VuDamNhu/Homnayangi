@@ -10,7 +10,11 @@ import { getMessages } from 'next-intl/server';
 import "../globals.css";
 import { Providers } from "@/providers";
 import PageTransition from "@/components/common/PageTransition";
-import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import { routing } from '@/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 const anybody = Anybody({
   variable: "--font-anybody",
@@ -67,9 +71,6 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-zen-cream text-on-surface">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <div className="absolute top-4 right-4 z-50">
-              <LanguageSwitcher />
-            </div>
             <PageTransition>{children}</PageTransition>
           </Providers>
         </NextIntlClientProvider>

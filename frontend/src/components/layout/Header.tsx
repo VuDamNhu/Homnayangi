@@ -5,14 +5,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Menu, X, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-  { label: "Khám Phá", href: "/" },
-  { label: "Công Thức", href: "/search" },
-  { label: "Trợ Lý Tủ Lạnh", href: "/ingredients" },
-] as const;
+import LanguageSwitcher from "../common/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export function Header() {
+  const t = useTranslations("Navigation");
+  
+  const navLinks = [
+    { label: t("discover"), href: "/" },
+    { label: t("recipes"), href: "/search" },
+    { label: t("fridgeAssistant"), href: "/ingredients" },
+    { label: t("nearMe"), href: "/near-me" },
+  ];
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -29,17 +33,19 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-zen-cream/90 backdrop-blur-md border-b-2 border-zen-ink/10 shadow-[0_4px_0px_0px_rgba(197,160,40,0.15)]">
-      <div className="max-w-screen-2xl mx-auto px-5 md:px-10 flex h-16 items-center justify-between gap-6">
+      <div className="max-w-screen-2xl mx-auto px-5 md:px-10 flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link
-          href="/"
-          className="font-display text-2xl font-black italic uppercase tracking-tighter text-zen-gold shrink-0"
-        >
-          HomNayAnGi
-        </Link>
+        <div className="flex-1 flex justify-start shrink-0">
+          <Link
+            href="/"
+            className="font-display text-2xl font-black italic uppercase tracking-tighter text-zen-gold"
+          >
+            HomNayAnGi
+          </Link>
+        </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex flex-none items-center gap-8">
           {navLinks.map((item) => (
             <Link
               key={item.href}
@@ -52,14 +58,16 @@ export function Header() {
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex-1 flex justify-end items-center gap-3">
+          <LanguageSwitcher />
+
           {/* Inline search — desktop */}
           <form onSubmit={handleSearch} className="relative hidden sm:flex items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm món ăn..."
+              placeholder={t("searchPlaceholder")}
               className={cn(
                 "manga-border bg-transparent px-4 py-1.5 w-48 lg:w-64",
                 "font-label text-sm placeholder:text-on-surface-variant/40",
@@ -106,7 +114,7 @@ export function Header() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm món ăn..."
+              placeholder={t("searchPlaceholder")}
               autoFocus
               className={cn(
                 "manga-border bg-transparent px-4 py-2 w-full",
