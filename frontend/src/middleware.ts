@@ -17,6 +17,7 @@ export function middleware(req: NextRequest) {
 
   const pathname = req.nextUrl.pathname;
   const pathWithoutLocale = pathname.replace(/^\/(en|vi)/, '') || '/';
+  // Kiểm tra cookie JWT thật do BE set (httpOnly)
   const hasSession = req.cookies.has('access_token') || req.cookies.has('refresh_token');
 
   // Chặn các route user cần đăng nhập → redirect về /login

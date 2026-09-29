@@ -3,6 +3,8 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 /**
  * Khởi động ứng dụng NestJS
@@ -32,6 +34,9 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
+  // Chuẩn hoá response lỗi và thành công
+  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalInterceptors(new TransformInterceptor());
   app.enableShutdownHooks();
 
   const port = Number(process.env.PORT) || 4000;

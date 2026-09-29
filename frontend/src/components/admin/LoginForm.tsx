@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
 
-const MOCK_PASSWORD = "admin123";
+interface UserResponse {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -19,7 +25,7 @@ export function LoginForm() {
     router.prefetch("/admin/dashboard");
   }, [router]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
@@ -29,15 +35,23 @@ export function LoginForm() {
     }
 
     setLoading(true);
+    try {
+      // Gọi API đăng nhập — BE sẽ set httpOnly cookie access_token & refresh_token
+      await apiFetch<{ user: UserResponse }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (password === MOCK_PASSWORD) {
-      document.cookie = "admin-session=1; path=/; max-age=86400";
+      // Lấy redirect từ query param nếu có
       const params = new URLSearchParams(window.location.search);
-      const next = params.get("callbackUrl") ?? "/admin/dashboard";
+      const next = params.get("redirect") ?? "/admin/dashboard";
       router.push(next);
-    } else {
+      router.refresh(); // Refresh để middleware nhận cookie mới
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Đăng nhập thất bại, vui lòng thử lại.";
+      setError(message);
       setLoading(false);
-      setError("Mật khẩu không đúng. Thử lại với: admin123");
     }
   }
 
@@ -93,7 +107,9 @@ export function LoginForm() {
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-red-500 font-medium">{error}</p>
+        <p role="alert" className="text-xs text-red-500 font-medium">
+          {error}
+        </p>
       )}
 
       {/* Submit */}
@@ -111,11 +127,6 @@ export function LoginForm() {
           "Đăng nhập"
         )}
       </button>
-
-      {/* Hint */}
-      <p className="text-center font-label text-[10px] uppercase tracking-[0.15em] text-zinc-400 pt-1">
-        Demo: bất kỳ email · password: admin123
-      </p>
     </form>
   );
 }
