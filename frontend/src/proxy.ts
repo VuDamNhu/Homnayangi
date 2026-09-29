@@ -41,7 +41,10 @@ export function proxy(req: NextRequest) {
 
   // Đã đăng nhập mà vào trang guest → redirect về dashboard
   if (GUEST_PATHS.includes(pathWithoutLocale) && hasSession) {
-    return NextResponse.redirect(new URL(`/${routing.defaultLocale}/dashboard`, req.url));
+    if (pathWithoutLocale === '/admin/login') {
+      return NextResponse.redirect(new URL(`/${routing.defaultLocale}/admin/dashboard`, req.url));
+    }
+    return NextResponse.redirect(new URL(`/${routing.defaultLocale}/`, req.url));
   }
 
   return response;
