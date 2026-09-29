@@ -95,12 +95,12 @@ export default function NearMeClient() {
         out center;
       `;
       
-      const res = await fetch('https://overpass-api.de/api/interpreter', {
+      const res = await fetch('/api/overpass', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
-        body: `data=${encodeURIComponent(query)}`
+        body: JSON.stringify({ query })
       });
       const data = await res.json();
       
