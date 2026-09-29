@@ -10,7 +10,7 @@ const PROTECTED_PATHS = ['/dashboard', '/profile'];
 const PROTECTED_ADMIN_PATHS = ['/admin'];
 const GUEST_PATHS = ['/login', '/register', '/admin/login'];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/_next')) return NextResponse.next();
 
   const response = intlMiddleware(req);
